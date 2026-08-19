@@ -178,5 +178,7 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(3000, () => console.log('DRK Labs Sunucusu Aktif! Port: 3000'));
->>>>>>> f5e75beba631a42ee57506e915ccf037eb80edf1
+const port = process.env.PORT || 10000;
+app.listen(port, () => {
+    console.log(`Sunucu ${port} portunda çalışıyor`);
+});
