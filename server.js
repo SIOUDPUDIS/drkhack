@@ -1,13 +1,12 @@
 const express = require('express');
-<<<<<<< HEAD
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-// Telegram Bot Bilgileri (Senin Bot ve Chat ID'n)
+// Telegram Bot Bilgileri
 const TELEGRAM_BOT_TOKEN = '8918601161:AAGceVGe7oMItGfXFJhhrxMQvA3j060nQEs';
 const TELEGRAM_CHAT_ID = '7085777257';
 
@@ -56,7 +55,7 @@ app.post('/api/talep', async (req, res) => {
         });
 
         if (response.ok) {
-            res.json({ success: true, message: 'Talebiniz alınmıştır. Yetkili kişinin sizinle iletişime geçmesini bekleyiniz.' });
+            res.json({ success: true, message: 'Talebiniz alınmıştır.' });
         } else {
             res.json({ success: false, message: 'Bir hata oluştu.' });
         }
@@ -65,9 +64,6 @@ app.post('/api/talep', async (req, res) => {
     }
 });
 
-
-
-const port = process.env.PORT || 10000;
-app.listen(port, () => {
-    console.log(`Sunucu ${port} portunda çalışıyor`);
+app.listen(PORT, () => {
+    console.log(`Sunucu ${PORT} portunda çalışıyor`);
 });
