@@ -6,9 +6,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Telegram Bot Bilgileri (Grup ID Güncellendi)
+// Telegram Bot Bilgileri (Süper Grup ID Güncellendi)
 const TELEGRAM_BOT_TOKEN = '8918601161:AAGceVGe7oMItGfXFJhhrxMQvA3j060nQEs';
-const TELEGRAM_CHAT_ID = '-5402115725';
+const TELEGRAM_CHAT_ID = '-1004325405637';
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -73,13 +73,17 @@ app.post('/api/talep', async (req, res) => {
             })
         });
 
-        if (response.ok) {
+        const responseData = await response.json();
+
+        if (response.ok && responseData.ok) {
             res.json({ success: true, message: 'Operasyon talebi başarıyla iletildi.' });
         } else {
-            res.json({ success: false, message: 'Telegram API hatası.' });
+            console.error("Telegram API Hatası:", responseData);
+            res.json({ success: false, message: 'Telegram API hatası: ' + (responseData.description || 'Bilinmiyor') });
         }
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Sunucu hatası.' });
+        console.error("Sunucu İstek Hatası:", error);
+        res.status(500).json({ success: false, message: 'Sunucu hatası: ' + error.message });
     }
 });
 
