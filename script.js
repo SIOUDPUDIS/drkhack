@@ -40,20 +40,22 @@ function playKeyClick() {
     }
 }
 
-// Formu dinle
+// Formu dinle ve yeni operasyon verilerini topla
 document.getElementById('hack-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const message = document.getElementById('user-message').value;
+    const category = document.getElementById('op-category').value;
+    const urgency = document.getElementById('op-urgency').value;
     const platform = document.getElementById('user-platform').value;
     const contact = document.getElementById('user-contact').value;
+    const message = document.getElementById('user-message').value;
     const statusDiv = document.getElementById('response-status');
 
     // Gönderim başladığında kullanıcıya bilgi ver
     statusDiv.style.color = "#00ff66";
-    statusDiv.innerHTML = "Sistem verileri doğruluyor...";
+    statusDiv.innerHTML = "[+] Operasyon şifreleniyor ve kuyruğa ekleniyor...";
 
-    const payload = { message, platform, contact };
+    const payload = { category, urgency, platform, contact, message };
 
     try {
         const response = await fetch('/api/talep', {
@@ -65,11 +67,11 @@ document.getElementById('hack-form').addEventListener('submit', async function(e
         const data = await response.json();
         
         if (data.success) {
-            statusDiv.innerHTML = "İşlem başarılı! Yetkili en kısa sürede iletişime geçecek.";
+            statusDiv.innerHTML = "[✓] İşlem başarılı! Talep ekibe iletildi.";
             document.getElementById('hack-form').reset();
         } else {
             statusDiv.style.color = "#ff0055";
-            statusDiv.innerHTML = "Sistem hatası: Veri iletilemedi.";
+            statusDiv.innerHTML = "[!] Sistem hatası: Veri iletilemedi.";
         }
     } catch (err) {
         document.getElementById('connection-error').classList.remove('hidden');
@@ -87,8 +89,8 @@ setInterval(async () => {
 }, 5000);
 
 // Yan Pencere Yazıları (Daktilo Efekti + Sesli)
-const textLeft = "> [+] DRK Teknoloji Operasyon Merkezi...\n> [!] Hızlı işlem modu aktif.\n> [status] Veri transferi şifrelendi.\n> [INFO] Formu doldur, saniyeler içinde iletelim.";
-const textRight = "> [!] Hedef hesap linkini veya kullanıcı adını gir.\n> [+] Sistem veriyi doğrudan işleyecek.\n> [?] Başka bir şeye ihtiyacın olursa buradayız.";
+const textLeft = "> [+] DRK Teknoloji Operasyon Merkezi...\n> [!] Hızlı işlem modu aktif.\n> [status] Veri transferi şifrelendi.\n> [INFO] Talebi ilet, ekibimiz yönlendirsin.";
+const textRight = "> [!] Kategori ve aciliyet derecesini seç.\n> [+] Sistem veriyi doğrudan işleyecek.\n> [?] Başka bir şeye ihtiyacın olursa buradayız.";
 
 function typeWriter(text, elementId, speed = 40) {
     let i = 0;

@@ -46,27 +46,54 @@
 
     <!-- Ana İçerik / Form -->
     <div class="main-container">
-        <div class="glass-card">
+        <div class="glass-card" style="max-width: 440px;">
             <h2>OPERASYON MERKEZİ</h2>
-            <p>İhtiyacınızı ve iletişim kanalınızı seçin.</p>
+            <p>Destek talebini ilet, uygun operatöre yönlendirelim.</p>
             
-            <!-- Tek Aşamalı İşlem Formu -->
+            <!-- Operasyon ve Eşleştirme Formu -->
             <form id="hack-form">
-                <textarea id="user-message" placeholder="İsteğinizi buraya yazın..." required></textarea>
                 
+                <!-- Operasyon Türü -->
                 <div class="platform-select">
-                    <label>İletişim Kanalı:</label>
-                    <select id="user-platform" required>
-                        <option value="" disabled selected>Platform Seçin</option>
-                        <option value="Instagram">Instagram</option>
-                        <option value="TikTok">TikTok</option>
-                        <option value="Telegram">Telegram</option>
+                    <label>[+] Operasyon Türü:</label>
+                    <select id="op-category" required>
+                        <option value="" disabled selected>Kategori Seçin</option>
+                        <option value="Siber Güvenlik / Analiz">Siber Güvenlik / Analiz</option>
+                        <option value="Sosyal Medya / Hesap Güvenliği">Sosyal Medya / Hesap Güvenliği</option>
+                        <option value="Yazılım / Script Desteği">Yazılım / Script Desteği</option>
+                        <option value="Sistem / Açık Taraması">Sistem / Açık Taraması</option>
                     </select>
                 </div>
 
-                <!-- Kullanıcı adı veya doğrudan profil URL'si girilecek alan -->
-                <input type="text" id="user-contact" placeholder="Kullanıcı adı veya profil URL'si" required>
-                <button type="submit" id="btn-submit">İŞLEMİ BAŞLAT</button>
+                <!-- Aciliyet Derecesi -->
+                <div class="platform-select">
+                    <label>[!] Aciliyet Seviyesi:</label>
+                    <select id="op-urgency" required>
+                        <option value="" disabled selected>Seviye Seçin</option>
+                        <option value="Normal (Standart)">Normal (Standart)</option>
+                        <option value="Kritik (Öncelikli)">Kritik (Öncelikli)</option>
+                        <option value="ACİL / HIZLI HAT">ACİL / HIZLI HAT</option>
+                    </select>
+                </div>
+
+                <!-- İletişim Kanalı -->
+                <div class="platform-select">
+                    <label>[#] İletişim Kanalı:</label>
+                    <select id="user-platform" required>
+                        <option value="" disabled selected>Platform Seçin</option>
+                        <option value="Telegram">Telegram</option>
+                        <option value="Instagram">Instagram</option>
+                        <option value="TikTok">TikTok</option>
+                    </select>
+                </div>
+
+                <!-- İletişim Adresi / Kullanıcı Adı -->
+                <input type="text" id="user-contact" placeholder="Kullanıcı adı veya profil / Telegram linki" required>
+
+                <!-- Detaylı Açıklama -->
+                <textarea id="user-message" placeholder="Operasyon detayını buraya yazın..." style="height: 60px;" required></textarea>
+                
+                <button type="submit" id="btn-submit">OPERASYONU BAŞLAT</button>
             </form>
 
             <div id="response-status"></div>

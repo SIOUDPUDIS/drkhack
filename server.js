@@ -6,9 +6,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// Telegram Bot Bilgileri
+// Telegram Bot Bilgileri (Grup ID Güncellendi)
 const TELEGRAM_BOT_TOKEN = '8918601161:AAGceVGe7oMItGfXFJhhrxMQvA3j060nQEs';
-const TELEGRAM_CHAT_ID = '7085777257';
+const TELEGRAM_CHAT_ID = '-5402115725';
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -40,24 +40,43 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'online' });
 });
 
-// Formdan gelen talepleri Telegram'a iletme endpoint'i
+// Formdan gelen talepleri Telegram grubuna iletme endpoint'i
 app.post('/api/talep', async (req, res) => {
-    const { message, contact } = req.body;
+    const { category, urgency, platform, contact, message } = req.body;
     let clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-    const telegramText = `🔥 DRKHack - Yeni Talep!\n\n💬 İstek: ${message}\n📞 İletişim: ${contact}\n🌐 IP: ${clientIp}`;
+    if (clientIp && clientIp.includes(',')) {
+        clientIp = clientIp.split(',')[0].trim();
+    }
+
+    // Telegram grubuna gidecek profesyonel operasyon raporu şablonu
+    const telegramText = 
+`🚨 **YENİ OPERASYON TALEBİ!** 🚨
+━━━━━━━━━━━━━━━━━━
+📌 **Kategori:** ${category || 'Belirtilmedi'}
+⚡ **Aciliyet:** ${urgency || 'Normal'}
+📱 **İletişim Kanalı:** ${platform || 'Belirtilmedi'}
+🔗 **Kullanıcı / Link:** ${contact}
+💬 **Detay:** ${message}
+🌐 **IP:** ${clientIp}
+━━━━━━━━━━━━━━━━━━
+*DRKHACK yönlendirme sistemi*`;
 
     try {
         const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: telegramText })
+            body: JSON.stringify({ 
+                chat_id: TELEGRAM_CHAT_ID, 
+                text: telegramText,
+                parse_mode: 'Markdown' 
+            })
         });
 
         if (response.ok) {
-            res.json({ success: true, message: 'Talebiniz alınmıştır.' });
+            res.json({ success: true, message: 'Operasyon talebi başarıyla iletildi.' });
         } else {
-            res.json({ success: false, message: 'Bir hata oluştu.' });
+            res.json({ success: false, message: 'Telegram API hatası.' });
         }
     } catch (error) {
         res.status(500).json({ success: false, message: 'Sunucu hatası.' });
@@ -65,5 +84,5 @@ app.post('/api/talep', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Sunucu ${PORT} portunda çalışıyor`);
+    console.log(`DRK Teknoloji Sunucusu ${PORT} portunda aktif!`);
 });
