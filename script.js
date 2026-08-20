@@ -1,3 +1,45 @@
+let audioCtx = null;
+
+// Kullanıcı sayfada fareyi hareket ettirdiği veya herhangi bir tuşa bastığı an arka planda ses motorunu otomatik uyandır
+const unlockAudio = () => {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } else if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+    // Tetiklendikten sonra dinleyicileri kaldır ki bir daha boşuna çalışmasın
+    window.removeEventListener('mousemove', unlockAudio);
+    window.removeEventListener('keydown', unlockAudio);
+    window.removeEventListener('touchstart', unlockAudio);
+};
+
+window.addEventListener('mousemove', unlockAudio, { once: true });
+window.addEventListener('keydown', unlockAudio, { once: true });
+window.addEventListener('touchstart', unlockAudio, { once: true });
+
+function playKeyClick() {
+    try {
+        if (!audioCtx) return;
+        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'square'; 
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime); 
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+    } catch (e) {
+        // Hata olursa geç
+    }
+}
+
 // Formu dinle
 document.getElementById('hack-form').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -11,12 +53,7 @@ document.getElementById('hack-form').addEventListener('submit', async function(e
     statusDiv.style.color = "#00ff66";
     statusDiv.innerHTML = "Sistem verileri doğruluyor...";
 
-    // Sunucuya göndereceğimiz paket
-    const payload = {
-        message: message,
-        platform: platform,
-        contact: contact // Kullanıcı ister link ister kullanıcı adı girsin, olduğu gibi alıyoruz
-    };
+    const payload = { message, platform, contact };
 
     try {
         const response = await fetch('/api/talep', {
@@ -49,7 +86,7 @@ setInterval(async () => {
     }
 }, 5000);
 
-// Yan Pencere Yazıları (Daktilo Efekti)
+// Yan Pencere Yazıları (Daktilo Efekti + Sesli)
 const textLeft = "> [+] DRK Teknoloji Operasyon Merkezi...\n> [!] Hızlı işlem modu aktif.\n> [status] Veri transferi şifrelendi.\n> [INFO] Formu doldur, saniyeler içinde iletelim.";
 const textRight = "> [!] Hedef hesap linkini veya kullanıcı adını gir.\n> [+] Sistem veriyi doğrudan işleyecek.\n> [?] Başka bir şeye ihtiyacın olursa buradayız.";
 
@@ -57,7 +94,13 @@ function typeWriter(text, elementId, speed = 40) {
     let i = 0;
     function type() {
         if (i < text.length) {
-            document.getElementById(elementId).innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+            const char = text.charAt(i);
+            document.getElementById(elementId).innerHTML += char === '\n' ? '<br>' : char;
+            
+            if (char !== ' ' && char !== '\n') {
+                playKeyClick();
+            }
+
             i++;
             setTimeout(type, speed);
         }
@@ -69,3 +112,26 @@ setTimeout(() => {
     typeWriter(textLeft, 'typewriter-left', 35);
     typeWriter(textRight, 'typewriter-right', 35);
 }, 2500);
+
+// --- 3. CANLI PİNG SAYACI ---
+setInterval(() => {
+    const pingText = document.getElementById('ping-text');
+    if (pingText) {
+        const randomPing = Math.floor(Math.random() * (35 - 12 + 1)) + 12;
+        pingText.innerHTML = randomPing + 'ms';
+    }
+}, 3000);
+
+// --- 4. RASTGELE EKRAN GLİTCH (BOZULMA) EFEKTİ ---
+function triggerGlitch() {
+    const body = document.body;
+    body.classList.add('glitch-active');
+    
+    setTimeout(() => {
+        body.classList.remove('glitch-active');
+    }, 150);
+}
+
+setInterval(() => {
+    triggerGlitch();
+}, Math.floor(Math.random() * (15000 - 8000 + 1)) + 8000);
